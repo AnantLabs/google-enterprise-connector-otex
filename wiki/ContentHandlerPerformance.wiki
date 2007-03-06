@@ -1,4 +1,4 @@
 #summary Performance data for ContentHandler implementations
 #labels Phase-Implementation
 
-There is an Excel spreadsheet, [http://google-enterprise-connector-otex.googlecode.com/svn/wiki/ContentHandlerPerformance.xls ContentHandlerPerformance.xls] in the wiki Subversion tree. The spreadsheet contains performance data and graphs for the various ContentHandler implementations, over a range of file sizes, up to 35 MB.
+There is an Excel spreadsheet, [http://google-enterprise-connector-otex.googlecode.com/svn/wiki/ContentHandlerPerformance.xls ContentHandlerPerformance.xls] in the wiki Subversion tree. The spreadsheet contains performance data and graphs for the various !ContentHandler implementations, over a range of file sizes, up to 35 MB.
