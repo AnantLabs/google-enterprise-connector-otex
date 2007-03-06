@@ -1,4 +1,4 @@
 #summary Performance data for ContentHandler implementations
 #labels Phase-Implementation
 
-We need a link of some kind here....
+There is an Excel spreadsheet, [http://google-enterprise-connector-otex.googlecode.com/svn/wiki/ContentHandlerPerformance.xls ContentHandlerPerformance.xls] in the wiki Subversion tree.
