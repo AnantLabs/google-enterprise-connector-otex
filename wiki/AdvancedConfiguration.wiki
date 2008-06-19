@@ -1,4 +1,4 @@
-#summary Advanced configuration for the Documentum connector
+#summary Advanced configuration for the Livelink connector
 #labels Featured
 
 = Configure the connectorInstance.xml file =
