@@ -1,0 +1,7 @@
+#summary Advanced configuration for the Documentum connector
+#labels Featured
+
+= Configure the connectorInstance.xml file =
+
+For information about the advanced configuration properties in connectorInstance.xml, see the
+[http://google-enterprise-connector-otex.googlecode.com/svn/trunk/projects/otex-core/doc/livelink_xml_parameters.html internal documentation].
