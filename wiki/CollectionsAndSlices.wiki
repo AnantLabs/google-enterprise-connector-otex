@@ -1,4 +1,5 @@
 #summary How to index content using collections or metadata.
+#labels Featured,Phase-Deploy
 
 = Introduction =
 
