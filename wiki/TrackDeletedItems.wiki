@@ -65,3 +65,4 @@ all deleted items are feed to the GSA, whether the documents have
 been indexed or not.  The GSA efficiently handles delete requests for
 items it never indexed.
 
+TODO: talk about setting up a connector dedicated to deletes.
