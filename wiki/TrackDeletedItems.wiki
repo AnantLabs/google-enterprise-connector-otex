@@ -30,11 +30,8 @@ specific auditing feature in the Livelink Server.
 
 To enable Livelink auditing of deleted items:
   # Navigate to the "Livelink Administration" page on the Livelink server.
-
   # Under the "System Administration" section, select "Administer Event Auditing".
-
   # Select "Set Auditing Interests".
-
   # If "Delete" events are not already enabled, do so.
 
 If auditing is already enabled for many different events (especially
