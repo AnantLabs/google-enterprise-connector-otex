@@ -1,4 +1,4 @@
-#Removing Documents from the Google Index that have been Deleted from the Livelink Repository.
+#summary Removing Documents from the Google Index that have been Deleted from the Livelink Repository.
 
 == Introduction ==
 
@@ -61,7 +61,7 @@ The Livelink Audit Log does not preserve the original location from
 where items  were deleted.  If the Livelink Connector was configured 
 to only index items from a small set of folders, the Connector cannot 
 determine if deleted items originated from that set of folders.  Therefore,
-all deleted items are feed to the GSA, whether the documents have
+all deleted items are fed to the GSA, whether the documents have
 been indexed or not.  The GSA efficiently handles delete requests for
 items it never indexed.
 
