@@ -37,20 +37,6 @@ always be used, whether authentication is done via HTTP
 tunneling or not. The default value is empty.</td>
 </tr>
 
-<tr>
-<td><em>server, port, displayUrl</em></td>
-<td><em>Placeholders for the properties file.</em></td>
-<td><em>Specified on the connector configuration form.</em></td>
-</tr>
-
-<tr><th colspan="3">Livelink System Administrator Properties</th></tr>
-
-<tr>
-<td><em>username, password, domainName</em></td>
-<td><em>Placeholders for the properties file.</em></td>
-<td><em>Specified on the connector configuration form.</em></td>
-</tr>
-
 <tr><th colspan="3">HTTP Tunneling Properties</th></tr>
 
 <tr>
@@ -73,12 +59,6 @@ list may be either a Base64 encoded x.509 format certificate or a
 path to a directory on the Connector Manager host which contains
 one or more files containing such certificates. The default value
 is an empty list.</td>
-</tr>
-
-<tr>
-<td><em>livelinkCgi, httpUsername, httpPassword, enableNtlm, https, useUsernamePasswordWithWebServer</em></td>
-<td><em>Placeholders for the properties file.</em></td>
-<td><em>Specified on the connector configuration form.</em></td>
 </tr>
 
 <tr><th colspan="3">Separate Authentication Properties</th></tr>
@@ -112,12 +92,6 @@ both set to true. Each value in the list may be either a Base64
 encoded x.509 format certificate or a path to a directory on the
 Connector Manager host which contains one or more files containing
 such certificates. The default value is an empty list.</td>
-</tr>
-
-<tr>
-<td><em>authenticationServer, authenticationPort, authenticationLivelinkCgi, authenticationEnableNtlm, authenticationHttps, authenticationDomainName, authenticationUseUsernamePasswordWithWebServer</em></td>
-<td><em>Placeholders for the properties file.</em></td>
-<td><em>Specified on the connector configuration form.</em></td>
 </tr>
 
 <tr><th colspan="3">Indexing Properties</th></tr>
@@ -418,12 +392,6 @@ following entries:
 <dd>!OpenPoll
 <dt>default
 <dd>properties</dd>
-
-<tr>
-<td><em>includedLocationNodes</em></td>
-<td><em>Placeholder for the properties file.</em></td>
-<td><em>Specified on the connector configuration form.</em></td>
-</tr>
 
 <tr><th colspan="3">Other Properties</th></tr>
 
