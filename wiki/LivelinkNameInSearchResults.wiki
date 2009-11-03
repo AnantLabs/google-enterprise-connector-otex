@@ -43,6 +43,6 @@ Third, for some help in debugging, you may want to find the line near the top th
 {{{
 <xsl:variable name="show_meta_tags">0</xsl:variable>
 }}}
-and change the `0` to a `1` (without quotes). This will tell you at a glance whether you're retrieving the google:title property correctly, and you may even want to try this change and the first one without the second to see what the new titles will be along with the old. You will likely want to set it back to `0` for production.
+and change the `0` to a `1`. This will tell you at a glance whether you're retrieving the google:title property correctly, and you may even want to try this change and the first one without the second to see what the new titles will be along with the old. You will likely want to set it back to `0` for production.
 
-After you save any stylesheet changes, when you perform a search to test them for the first time, you need to add "&proxyreload=1" to the URL (not the search box) to force the front end to reload your edited stylesheet.
+After you save any stylesheet changes, when you perform a search to test them for the first time, you need to add `&proxyreload=1` to the URL (not the search box) to force the front end to reload your edited stylesheet.
