@@ -4,8 +4,47 @@
 = Configure the connectorInstance.xml file =
 
 This page describes the advanced configuration properties in connectorInstance.xml.
+=== Default connectorInstance.xml file ===
 
-===Configuration properties===
+The default configuration file looks like this:
+
+{{{
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+    <!-- EDIT THIS BEAN DEFINTION WITH CUSTOM PROPERTY VALUES -->
+    <bean id="Livelink_Enterprise_Server"
+          class="com.google.enterprise.connector.otex.LivelinkConnector"
+          parent="Livelink_Enterprise_Server_Defaults" 
+          dependency-check="all" scope="prototype">
+
+        <!-- SET CUSTOM PROPERTY VALUES HERE -->
+
+    </bean>
+
+    <!-- EDIT THIS BEAN DEFINTION WITH CAUTION -->
+    <bean id="authenticationManager"
+          class="com.google.enterprise.connector.otex.LivelinkAuthenticationManager"
+          scope="prototype"/>
+</beans>
+}}}
+
+The default values of the properties can be modified by inserting the modified value into the file below the following line:
+
+{{{
+        <!-- SET CUSTOM PROPERTY VALUES HERE -->
+}}}
+
+For example, to set the windowsDomain property to "example", you would add the following XML `property` element to the file:
+
+{{{
+        <!-- SET CUSTOM PROPERTY VALUES HERE -->
+        <property name="windowsDomain" value="example"/>
+}}}
+
+=== Configuration properties ===
+
+The following table describes the configuration properties, the equivalent Livelink properties, the possible values, and the default value.
 
 <table width="95%"  border="1" cellpadding="5">
 
