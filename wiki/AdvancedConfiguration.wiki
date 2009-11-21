@@ -1,9 +1,12 @@
 #summary Advanced configuration for the Livelink connector
 #labels Featured,Phase-Deploy
 
-= Configure the connectorInstance.xml file =
+<h1>Configure the connectorInstance.xml file</h1>
 
 This page describes the advanced configuration properties in connectorInstance.xml.
+
+<wiki:toc max_depth="3" />
+
 == Default connectorInstance.xml file ==
 
 The default configuration file looks like this:
@@ -33,14 +36,12 @@ The default configuration file looks like this:
 
 The default values of the properties can be modified by inserting
 the modified value into the file below the following line:
-
 {{{
         <!-- SET CUSTOM PROPERTY VALUES HERE -->
 }}}
 
 For example, to set the windowsDomain property to "example", you
 would add the following XML `property` element to the file:
-
 {{{
         <!-- SET CUSTOM PROPERTY VALUES HERE -->
         <property name="windowsDomain" value="example"/>
@@ -48,6 +49,22 @@ would add the following XML `property` element to the file:
 
 The changes will take effect when you restart Tomcat or edit and
 save the connector configuration in the GSA Admin Console.
+
+=== Map and list properties ===
+
+In the cases where the property values are maps or lists, you can copy
+the default values and add or remove entries. If you only want to add
+new entries, it is simpler to use `merge="true"`. For example, to add
+an entry to use Livelink /open URLs for documents, you can use the
+following:
+
+{{{
+<property name="displayPatterns">
+    <map merge="true">
+        <entry key="144" value="/open/{0}" />
+    </map>
+</property>
+}}}
 
 == Configuration properties ==
 
