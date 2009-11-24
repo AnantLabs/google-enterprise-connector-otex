@@ -7,6 +7,23 @@ This page describes the advanced configuration properties in connectorInstance.x
 
 <wiki:toc max_depth="3" />
 
+== Prepared to edit connectorInstance.xml ==
+
+The connector instance and the connectorInstance.xml file are interdependent. You cannot edit the connectorInstance.xml file until you create a connector instance, but you do not want to index content until you have edited the file. If you have already created a connector instance and need to edit the advanced configuration properties, then you may need to restart the connector traversal.
+
+To create a connector instance, edit connectorInstance.xml, and then start indexing content:
+
+    # In the GSA Admin Console, go to the Connectors page and add a connector instance.
+    # On the Add Connector page, you need to disable the traversal. There are two ways of doing this:
+        * In GSA 6.2, you can select the *Disable traversal* check box.
+        * In earlier versions, you can select a schedule from 1:00 AM to 1:00 AM.
+    # Click the *Save Configuration* button.
+    # Edit the connectorInstance.xml file in a text editor. The file is located in your Google connectors installation tree under Tomcat/webapps/connector-manager/connectors/!Livelink_Enterprise_Server/_connector-name_.
+    # Edit the connector in the Admin Console, and enable the traversal:
+        * In GSA 6.2, you can deselect the *Disable traversal* check box.
+        * In earlier versions, you can select a schedule from 12:00 AM to 12:00 AM, or any non-empty interval.
+    # Click the *Save Configuration* button.
+
 == Default connectorInstance.xml file ==
 
 The default configuration file looks like this:
