@@ -7,7 +7,7 @@ This page describes the advanced configuration properties in connectorInstance.x
 
 <wiki:toc max_depth="3" />
 
-== Prepared to edit connectorInstance.xml ==
+== Prepare to edit connectorInstance.xml ==
 
 The connector instance and the connectorInstance.xml file are interdependent. You cannot edit the connectorInstance.xml file until you create a connector instance, but you do not want to index content until you have edited the file. If you have already created a connector instance and need to edit the advanced configuration properties, then you may need to restart the connector traversal.
 
