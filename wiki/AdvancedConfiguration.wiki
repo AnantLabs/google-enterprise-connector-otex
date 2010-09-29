@@ -9,9 +9,9 @@ This page describes the advanced configuration properties in connectorInstance.x
 
 == Prepare to edit connectorInstance.xml ==
 
-The connector instance and the connectorInstance.xml file are interdependent. You cannot edit the connectorInstance.xml file until you create a connector instance, but you do not want to index content until you have edited the file. If you have already created a connector instance and need to edit the advanced configuration properties, then you may need to restart the connector traversal.
+The connector instance and the connectorInstance.xml file are interdependent. You cannot edit the connectorInstance.xml file until you create a connector instance, but you do not want to index content until you have edited the file. If you have already created a connector instance and need to edit the advanced configuration properties, then you may need to reset the connector traversal.
 
-To create a connector instance, edit connectorInstance.xml, and then start indexing content:
+To create a new connector instance, edit connectorInstance.xml, and then start indexing content:
 
     # In the GSA Admin Console, go to the Connectors page and add a connector instance.
     # On the Add Connector page, you need to disable the traversal. There are two ways of doing this:
@@ -23,6 +23,13 @@ To create a connector instance, edit connectorInstance.xml, and then start index
         * In GSA 6.2, you can deselect the *Disable traversal* check box.
         * In earlier versions, you can select a schedule from 12:00 AM to 12:00 AM, or any non-empty interval.
     # Click the *Save Configuration* button.
+
+To edit connectorInstance.xml for an existing connector instance, and then reset the traversal:
+
+    # Edit the connectorInstance.xml file in a text editor. The file is located in your Google connectors installation tree under Tomcat/webapps/connector-manager/connectors/!Livelink_Enterprise_Server/_connector-name_.
+    # In the GSA Admin Console, go to the Connectors page and click the Edit link for the connector instance.
+    # Click the *Save Configuration* button. You do not need to make any changes on the page.
+    # Click the Reset link for the connector instance, and then click OK in the popup dialog.
 
 == Default connectorInstance.xml file ==
 
