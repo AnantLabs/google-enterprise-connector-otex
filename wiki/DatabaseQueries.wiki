@@ -1,4 +1,4 @@
-#summary SQL queries executed by the connector
+#summary SQL queries executed by the Livelink connector
 #labels Phase-Deploy,UnderConstruction
 
 = Introduction =
