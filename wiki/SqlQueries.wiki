@@ -1,0 +1,52 @@
+#summary SQL queries executed by the connector
+#labels Phase-Deploy
+
+= Introduction =
+
+Add your content here.
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
+
+Due to the constraints of the Livelink API, all queries have a table correlation named "a" appended to the table expression, and all queries must have a where clause.
+
+= Configuration =
+
+  # Determine the database type. If the servtype property is not configured, then the following two queries are run to determine whether Livelink is backed by Oracle or SQL Server.
+{{{
+select 42 from KDual a where 1=1
+
+select 42 from dual a where 1=1
+}}}
+  # If Items to Index are specified or hidden items are not to be indexed, ensure that the DTreeAncestors table is not empty. The first query is used with Oracle, and the second with SQL Server.
+{{{
+select DataID from DTreeAncestors a where rownum = 1
+
+select TOP 1 DataID from DTreeAncestors a where 1=1
+}}}
+  # If Items to Index are specified, ensure that at least one of the items to index appears in the DTreeAncestors table.
+{{{
+select min(ModifyDate) as minModifyDate 
+from DTree a
+where DataID in (select DataID from DTreeAncestors where AncestorID in ($ancestorNodes)) 
+    or DataID in ($includedLocationNodes)
+}}}
+  # If Items to Index are specified or hidden items are not to be indexed, ensure that the DTreeAncestors table contains everything in the Enterprise workspace. The first query is used with Oracle, and the second with SQL Server.
+{{{
+select DataID from DTree a 
+where not exists (select DataID from DTreeAncestors where DataID = a.DataID and AncestorID = $enterpriseID) 
+    and OwnerID = $enterpriseVolumeID and DataID <> $enterpriseID and rownum = 1
+
+select TOP 1 DataID from DTree a 
+where not exists (select DataID from DTreeAncestors where DataID = a.DataID and AncestorID = $enterpriseID) 
+    and OwnerID = $enterpriseVolumeID and DataID <> $enterpriseID
+}}}
+
+= Authentication =
+
+= Traversal =
