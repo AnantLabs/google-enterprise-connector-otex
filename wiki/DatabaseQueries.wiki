@@ -1,9 +1,11 @@
 #summary SQL queries executed by the Livelink connector
 #labels Phase-Deploy,UnderConstruction
 
+<wiki:toc max_depth="1" />
+
 = Introduction =
 
-Due to the constraints of the Livelink API, all queries have a table correlation named `a` appended to the table expression, and all queries must have a where clause. Values specified at runtime are shown using the SQL parameter synax `:parameter`. Many of the these parameters are taken from the connector properties of the same name, e.g., `:includedLocationNodes` is the Items to Index property name.
+Due to the constraints of the Livelink API, all queries have a table correlation named "`a`" appended to the table expression, and all queries must have a where clause. Values specified at runtime are shown using the SQL parameter synax `:parameter`. Many of the these parameters are taken from the connector properties of the same name, e.g., `:includedLocationNodes` is the Items to Index property name.
 
 = Configuration =
 
