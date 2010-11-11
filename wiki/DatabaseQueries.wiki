@@ -1,30 +1,57 @@
 #summary SQL queries executed by the Livelink connector
-#labels Phase-Deploy,UnderConstruction
+#labels Phase-Deploy
 
-<wiki:toc max_depth="1" />
+<wiki:toc max_depth="2" />
 
 = Note about Syntax =
 
-Due to the constraints of the Livelink API, all queries have a table correlation named "`a`" appended to the table expression, and all queries must have a where clause. Values specified at runtime are shown using the invented synax `$parameter`. Many of these parameters are taken from the connector properties of the same name, e.g., `$includedLocationNodes` is the Items to Index property name.
+Due to the constraints of the Livelink API, all queries have a table correlation named "`a`" appended to the table expression, and all queries must have a where clause. Values specified at runtime are shown using the invented synax `$parameter`. 
 
 Optional pieces of a query are shown in square brackets: `[ and DataID in ($excludedLocationNodes)  ]`. Exclusive choices are separated by a vertical bar: `[ 1=1 | ModifyDate > $modifyDate ]`.
 
+In many cases, different query syntax must be used depending on whether Livelink is backed by Oracle or SQL Server. Both queries are shown here.
+
 All queries are submitted as literal strings without SQL parameters. The Livelink API may prepare a statement before execution, but the prepared statement is not cached for future execution.
+
+== Query Parameters ==
+
+|| `$includedLocationNodes` || A comma-separated list of object IDs, taken from Items to Index ||
+|| `$excludedLocationNodes` || A comma-separated list of object IDs. An advanced configuration property ||
+|| `$excludedNodeTypes` || A comma-separated list of subtypes. An advanced configuration property ||
+|| `$excludedVolumeTypes` || A comma-separated list of subtypes. An advanced configuration property ||
+|| `$ancestorNodes` || A comma-separated list of object or volume IDs, derived from `$includedLocationNodes` or `$candidates` ||
+|| `$enterpriseID` || The object ID of the Enterprise workspace, often but not always 2000 ||
+|| `$enterpriseVolumeID` || The volume ID of the Enterprise workspace, often but not always -2000 ||
+|| `$volumeSubType` || The Undelete workspace (402) or workflow volume (161) subtypes ||
+|| `$undeleteVolumeID` || The volume ID of the Undelete workspace  ||
+|| `$workflowVolumeID` ||  The volume ID of the workflow volume ||
+|| `$modifyDate` || The current !ModifyDate in the traversal order ||
+|| `$dataID` || The current DataID (object ID) in the traversal order ||
+|| `$batchSize` || The requested batch size, determined by the traversal rate, up to a configurable maximum of 200 ||
+|| `$candidates` || The object IDs returned by the first traversal query ||
+|| `$deleteDate` || The current !ModifyDate in the traversal order for deleted documents ||
+|| `$eventID` || The current EventID in the traversal order for deleted documents ||
+
 
 = Configuration Queries =
 
 These queries are executed when validating the configuration form in the admin console.
 
-  # Determine the database type. If the servtype property is not configured, then the following two queries are run to determine whether Livelink is backed by Oracle or SQL Server.
+  # Determine the database type. If the servtype property is not configured, then the following two queries are run to determine whether Livelink is backed by Oracle or SQL Server. The first query is a baseline check for database connectivity.
 {{{
 select 42 from KDual a where 1=1
-
+}}}
+  # The second query is Oracle-specific, and an error indicates the use of SQL Server.
+{{{
 select 42 from dual a where 1=1
 }}}
-  # If Items to Index are specified or hidden items are not to be indexed, ensure that the DTreeAncestors table is not empty. The first query is used with Oracle, and the second with SQL Server.
+  # If Items to Index are specified or hidden items are not to be indexed, ensure that the DTreeAncestors table is not empty. 
+    * *Oracle*
 {{{
 select DataID from DTreeAncestors a where rownum = 1
-
+}}}
+    * *SQL Server*
+{{{
 select TOP 1 DataID from DTreeAncestors a where 1=1
 }}}
   # If Items to Index are specified, ensure that at least one of the items to index appears in the DTreeAncestors table.
@@ -34,23 +61,32 @@ from DTree a
 where DataID in (select DataID from DTreeAncestors where AncestorID in ($ancestorNodes)) 
     or DataID in ($includedLocationNodes)
 }}}
-  # If Items to Index are specified or hidden items are not to be indexed, ensure that the DTreeAncestors table contains everything in the Enterprise workspace. The first query is used with Oracle, and the second with SQL Server.
+  # If Items to Index are specified or hidden items are not to be indexed, ensure that the DTreeAncestors table contains everything in the Enterprise workspace.
+    * *Oracle*
 {{{
 select DataID
 from DTree a 
 where not exists (select DataID from DTreeAncestors where DataID = a.DataID and AncestorID = $enterpriseID) 
     and OwnerID = $enterpriseVolumeID and DataID <> $enterpriseID and rownum = 1
-
+}}}
+    * *SQL Server*
+{{{
 select TOP 1 DataID
 from DTree a 
 where not exists (select DataID from DTreeAncestors where DataID = a.DataID and AncestorID = $enterpriseID) 
     and OwnerID = $enterpriseVolumeID and DataID <> $enterpriseID
 }}}
 
+
 = Authorization Queries =
 
 These queries are executed when authorizing users for search results.
 
+  # Determines the Undelete and workflow volume IDs. The optional condition checks the excluded object IDs for the found volume ID.
+{{{
+select DataID, PermID from DTree a where SubType = $volumeSubType
+    [ and DataID in ($excludedLocationNodes) ]
+}}}
   # Checks whether the search user has permission for the items with the given object IDs. The optional conditions correspond to exclusions in the traversal. The first optional condition excludes the Undelete workspace. The second optional condition excludes the workflow volume. The third optional condition excludes hidden items, and it has nested optional conditions if Items to Index are specified.
 {{{
 select DataID, PermID from WebNodes a where DataID in ($objectIDs)
@@ -69,27 +105,27 @@ select DataID, PermID from WebNodes a where DataID in ($objectIDs)
                         )
     ]
 }}}
-  # Determines the Undelete and workflow volume IDs. The optional condition checks the excluded object IDs for the found volume ID.
-{{{
-select DataID, PermID from DTree a where SubType = $volumeSubType
-    [ and DataID in ($excludedLocationNodes) ]
-}}}
+
 
 = Traversal Queries =
 
-These queries are executed when indexing content. The traversal runs in batches, in modification date order. The default batch size is 200, up to a configurable maximum of 500.
+These queries are executed when indexing content. The traversal runs in batches, in modification date order.
 
-  # Find the latest event in the audit trail so that we do not process older delete events. The first query is used with Oracle, and the second with SQL Server.
+  # Find the latest event in the audit trail so that we do not process older delete events.
+    * *Oracle*
 {{{
 select TO_CHAR(AuditDate, 'YYYY-MM-DD HH24:MI:SS') as AuditDate
 from DAuditNew a
 where EventID in (select max(EventID) from DAuditNew)
-
+}}}
+    * *SQL Server*
+{{{
 select CONVERT(VARCHAR(23), AuditDate, 121) as AuditDate
 from DAuditNew a
 where EventID in (select max(EventID) from DAuditNew)
 }}}
-  # Gets candidates for the next batch. The traversal queries are split into two, one gets candidate batches of the appropriate size, and the other applies permissions and the configured restrictions such as Items to Index and the advanced configuration of included and excluded types and items. This avoids a large multi-join across full tables. The optional conditions are used except when starting a new traversal. The first query is used with Oracle, and the second with SQL Server. The Oracle query uses TO_DATE instead of TIMESTAMP literals to preserve support for Oracle 8i.
+  # Gets candidates for the next batch. The traversal queries are split into two, one gets candidate batches of the appropriate size, and the other applies permissions and the configured restrictions such as Items to Index and the advanced configuration of included and excluded types and items. This avoids a large multi-join across full tables. The optional conditions are always used except when starting a new traversal.
+    * *Oracle*
 {{{
 select ModifyDate, DataID
 from (select * from DTree order by ModifyDate, DataID)
@@ -99,7 +135,9 @@ where
       and
     ]
     rownum <= $batchSize
-
+}}}
+    * *SQL Server*
+{{{
 select top $batchSize ModifyDate, DataID
 from DTree
 where
@@ -127,16 +165,19 @@ where DataID in ($candidates)
                          where DataID in ($candidates) and AncestorID in ($excludedLocationNodes)) ]
 order by ModifyDate, DataID
 }}}
-  # Gets items to be deleted, based on the audit trail.  The first query is used with Oracle, and the second with SQL Server.
+  # Gets items to be deleted, based on the audit trail.
+    * *Oracle*
 {{{
-select TO_CHAR(AuditDate, 'YYYY-MM-DD HH24:MI:SS') as AuditDate, EvenID, DataID
+select TO_CHAR(AuditDate, 'YYYY-MM-DD HH24:MI:SS') as AuditDate, EventID, DataID
 from (select * from DAuditNew order by AuditDate, EventID)
 where AuditID = 2
     and (AuditDate > TO_DATE($deleteDate, 'YYYY-MM-DD HH24:MI:SS') 
          or (AuditDate = TO_DATE($deleteDate, 'YYYY-MM-DD HH24:MI:SS') and EventID > $eventID))
     [ and SubType not in ($excludedNodeTypes) ]
     and rownum <= $batchSize
-
+}}}
+    * *SQL Server*
+{{{
 select top $batchSize CONVERT(VARCHAR(23), AuditDate, 121) as AuditDate, EventID, DataID
 from DAuditNew
 where AuditID = 2
@@ -145,3 +186,7 @@ where AuditID = 2
     [ and SubType not in ($excludedNodeTypes) ]
 order by ModifyDate, DataID
 }}}
+
+= References =
+
+  * The AdvancedConfiguration wiki page describes the advanced configuration properties in more detail.
