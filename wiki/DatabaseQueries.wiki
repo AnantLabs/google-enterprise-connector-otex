@@ -27,7 +27,7 @@ All queries are submitted as literal strings without SQL parameters. The Livelin
 || `$workflowVolumeID` ||  The volume ID of the workflow volume ||
 || `$modifyDate` || The current !ModifyDate in the traversal order ||
 || `$dataID` || The current DataID (object ID) in the traversal order ||
-|| `$batchSize` || The requested batch size, determined by the traversal rate, with a default of 200, up to a configurable maximum of 500 ||
+|| `$batchSize` || The requested batch size, based on the traversal rate, with a default of 200, up to a configurable maximum of 500 with a hard ceiling of 1000 ||
 || `$candidates` || A comma-separated list of up to `$batchSize` object IDs returned by the first traversal query ||
 || `$deleteDate` || The current !ModifyDate in the traversal order for deleted documents ||
 || `$eventID` || The current EventID in the traversal order for deleted documents ||
@@ -124,7 +124,7 @@ select CONVERT(VARCHAR(23), AuditDate, 121) as AuditDate
 from DAuditNew a
 where EventID in (select max(EventID) from DAuditNew)
 }}}
-  # Gets candidates for the next batch. The traversal queries are split into two, one gets candidate batches of the appropriate size, and the other applies permissions and the configured restrictions such as Items to Index and the advanced configuration of included and excluded types and items. This avoids a large multi-join across full tables. The optional conditions are always used except when starting a new traversal.
+  # Gets candidates for the next batch. The traversal queries are split into two, one gets candidate batches of the appropriate size, and the other applies restrictions. This avoids a large multi-join across full tables. The optional conditions are always used except when starting a new traversal.
     * *Oracle*
 {{{
 select ModifyDate, DataID
@@ -147,7 +147,7 @@ where
     ]
 order by ModifyDate, DataID
 }}}
-  # Second query of the traversal, applying restrictions to the candidates from the first query.
+  # Second query of the traversal, applying restrictions to the candidates from the first query, including the permissions of the traversal user and the configured restrictions such as Items to Index and the advanced configuration of included and excluded types and items. The first optional condition is used if Items to Index are specified. The other optional conditions are used if the advanced configuration properties they refer to are non-empty.
 {{{
 select DataID, ModifyDate, MimeType, Name, DComment, CreateDate, OwnerName,
     SubType, OwnerID, UserID, DataSize, PermID
@@ -165,7 +165,7 @@ where DataID in ($candidates)
                          where DataID in ($candidates) and AncestorID in ($excludedLocationNodes)) ]
 order by ModifyDate, DataID
 }}}
-  # Gets items to be deleted, based on the audit trail.
+  # Gets items to be deleted, based on the audit trail. The optional conditions are used if the advanced configuration properties they refer to are non-empty.
     * *Oracle*
 {{{
 select TO_CHAR(AuditDate, 'YYYY-MM-DD HH24:MI:SS') as AuditDate, EventID, DataID
