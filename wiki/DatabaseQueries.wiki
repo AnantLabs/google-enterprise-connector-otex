@@ -19,7 +19,7 @@ All queries are submitted as literal strings without SQL parameters. The Livelin
 || `$excludedLocationNodes` || A comma-separated list of object IDs. An advanced configuration property ||
 || `$excludedNodeTypes` || A comma-separated list of subtypes. An advanced configuration property ||
 || `$excludedVolumeTypes` || A comma-separated list of subtypes. An advanced configuration property ||
-|| `$ancestorNodes` || A comma-separated list of object or volume IDs, derived from `$includedLocationNodes` or `$candidates` ||
+|| `$ancestorNodes` || A comma-separated list of object or volume IDs, derived from `$includedLocationNodes` ||
 || `$enterpriseID` || The object ID of the Enterprise workspace, often but not always 2000 ||
 || `$enterpriseVolumeID` || The volume ID of the Enterprise workspace, often but not always -2000 ||
 || `$volumeSubType` || The Undelete workspace (402) or workflow volume (161) subtypes ||
@@ -27,8 +27,8 @@ All queries are submitted as literal strings without SQL parameters. The Livelin
 || `$workflowVolumeID` ||  The volume ID of the workflow volume ||
 || `$modifyDate` || The current !ModifyDate in the traversal order ||
 || `$dataID` || The current DataID (object ID) in the traversal order ||
-|| `$batchSize` || The requested batch size, determined by the traversal rate, up to a configurable maximum of 200 ||
-|| `$candidates` || The object IDs returned by the first traversal query ||
+|| `$batchSize` || The requested batch size, determined by the traversal rate, with a default of 200, up to a configurable maximum of 500 ||
+|| `$candidates` || A comma-separated list of up to `$batchSize` object IDs returned by the first traversal query ||
 || `$deleteDate` || The current !ModifyDate in the traversal order for deleted documents ||
 || `$eventID` || The current EventID in the traversal order for deleted documents ||
 
