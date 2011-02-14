@@ -437,14 +437,16 @@ default value.
     Excluding hidden items, by setting this property to false,
     requires the use of the DTreeAncestors table in Livelink, which in
     turn requires that the Livelink Recommender agent be enabled. The
-    latest monthly Livelink patches are recommended.
+    latest monthly Livelink patches are recommended. Setting
+    [AdvancedConfiguration#useDTreeAncestors useDTreeAncestors]
+    to <tt>false</tt> is not supported with this configuration.
 
     One of the following values:
     <dl>
     <dt><tt>{}</tt> or <tt>false</tt>
-    <dd>Do not index hidden items.
+    <dd>Do not show hidden items.
     <dt><tt>{'ALL'}</tt> or <tt>true</tt>
-    <dd>Index all hidden items.</dd>
+    <dd>Show all hidden items.</dd>
 
     This value may be copied from the <tt>!ShowHiddenItems</tt>
     parameter in the `[Explorer]` section or in the
@@ -563,6 +565,32 @@ default value.
     </property>
     }}}
 
+==== useDTreeAncestors ====
+   Specifies whether to use the DTreeAncestors table to get hierarchy
+   information. Using the database table is faster, but the table may be
+   empty or incomplete.
+
+   Due to performance issues, Open Text has sometimes recommended turning off the 
+   Recommender agent. There have also been a number of bugs that led to missing entries. Many 
+   of the performance issues and other bugs have been fixed in the latest monthly patches, but it 
+   would be nice not to rely on DTreeAncestors since many deployments have incomplete or missing 
+   data.
+
+    If the use of DTreeAncestors is disabled, then a [AdvancedConfiguration#genealogist Genealogist]
+    implementation class will be used to get hierarchy information.
+
+    One of the following values:
+    <dl>
+    <dt><tt>false</tt>
+    <dd>Use multiple, separate database queries to get information about the hierarchy.
+    <dt><tt>true</tt>
+    <dd>Use the DTreeAncestors table.</dd>
+
+    <em>Default Value:</em>
+    {{{
+    <property name="useDTreeAncestors" value="true" />
+    }}}
+
 === Other Properties ===
 
 ==== tryLowercaseUsernames ====
@@ -622,6 +650,30 @@ default value.
     <em>Default Value:</em>
     {{{
     <property name="servtype" value=""/>
+    }}}
+
+==== genealogist ====
+    The name of the <tt>Genealogist</tt> implementation
+    class to use to lookup folder hierarchy information when
+    [AdvancedConfiguration#useDTreeAncestors useDTreeAncestors]
+    is <tt>false</tt>.
+
+    There are three <tt>Genealogist</tt> implementations in the
+    <tt>com.google.enterprise.connector.otex</tt> package:
+    <dl>
+    <dt><tt>Genealogist</tt>
+    <dd> The basic implementation, which uses one query for each item in a batch for each
+    level of the hierarchy.
+    <dt><tt>!HybridGenealogist</tt>
+    <dd> Uses a single query to get the parents of all items in a batch, and then 
+    uses one query for each item for each additional level of the hierarchy.
+    <dt><tt>!BatchGenealogist</tt>
+    <dd> Uses one query for each level of the hierarchy.
+
+    <em>Default Value:</em>
+    {{{
+    <property name="genealogist"
+              value="com.google.enterprise.connector.otex.BatchGenealogist"/>
     }}}
 
 === Other Beans ===
