@@ -650,7 +650,7 @@ default value.
     when assigning public access to documents that are accessible
     by the [AdvancedConfiguration#publicContentUsername publicContentUsername] user.
     Unlike the [AdvancedConfiguration#authorizationManager authorizationManager], this
-    bean must be an instance of <tt>LivelinkAuthorizationManager</tt>.
+    bean must be an instance of <tt>!LivelinkAuthorizationManager</tt>.
 
     There is a single <tt>!AuthorizationManager</tt> in the connector,
     but custom implementations can be used.
