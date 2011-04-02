@@ -48,11 +48,6 @@ The default configuration file looks like this:
         <!-- SET CUSTOM PROPERTY VALUES HERE -->
 
     </bean>
-
-    <!-- EDIT THIS BEAN DEFINTION WITH CAUTION -->
-    <bean id="authenticationManager"
-          class="com.google.enterprise.connector.otex.LivelinkAuthenticationManager"
-          scope="prototype"/>
 </beans>
 }}}
 
@@ -593,6 +588,82 @@ default value.
 
 === Other Properties ===
 
+==== authenticationManager ====
+    The <tt>!AuthenticationManager</tt> instance to use
+    when authenticating before providing access to content.
+
+    There are three <tt>!AuthenticationManager</tt> implementations in the
+    <tt>com.google.enterprise.connector.otex</tt> package:
+    <dl>
+    <dt><tt>!LivelinkAuthenticationManager</tt>
+    <dd>This implementation authenticates by using the
+    provided credentials to log in to Livelink.
+    <dt><tt>!NoOpAuthenticationManager</tt>
+    <dd><b>Note: This value bypasses Livelink security.</b> 
+    This implementation authenticates all users. An
+    optional "sharedPassword" property may be
+    configured containing a password which must be
+    present in the credentials.
+    <dt><tt>!LdapAuthenticationManager</tt>
+    <dd>This implementation uses the provided credentials
+    to authenticate against an LDAP server. Two
+    properties are required:</dd>
+        <dl>
+        <dt><tt>providerUrl</tt>
+        <dd>The LDAP or LDAPS URL for the directory server.
+        <dt><tt>securityPrincipalPattern</tt>
+        <dd>The DN to use for authentication. A single
+        <tt>java.text.!MessageFormat</tt>
+        parameter should be supplied;
+        the provided username will be substituted
+        there. For example:
+        <pre>uid={0},ou=people,dc=example,dc=com</pre></dd>
+
+    <em>Default Value:</em>
+    {{{
+    <property name="authenticationManager">
+        <bean class="com.google.enterprise.connector.otex.LivelinkAuthenticationManager"/>
+    </property>
+    }}}
+
+    In versions prior to 2.8, a custom authentication manager was assigned by editing
+    the <tt>authenticationManager</tt> bean definition in connectorInstance.xml.
+
+==== authorizationManager ====
+    The <tt>!AuthorizationManager</tt> instance to use
+    when authoring specific documents for specific users.
+
+    There is a single <tt>!AuthorizationManager</tt> in the connector,
+    but custom implementations can be used.
+
+    <em>Default Value:</em>
+    {{{
+    <property name="authorizationManager">
+        <bean class="com.google.enterprise.connector.otex.LivelinkAuthorizationManager"/>
+    </property>
+    }}}
+
+    <em>Since:</em> 2.8
+
+==== publicContentAuthorizationManager ====
+    The <tt>!AuthorizationManager</tt> instance to use
+    when assigning public access to documents that are accessible
+    by the [AdvancedConfiguration#publicContentUsername publicContentUsername] user.
+    Unlike the [AdvancedConfiguration#authorizationManager authorizationManager], this
+    bean must be an instance of <tt>LivelinkAuthorizationManager</tt>.
+
+    There is a single <tt>!AuthorizationManager</tt> in the connector,
+    but custom implementations can be used.
+
+    <em>Default Value:</em>
+    {{{
+    <property name="publicContentAuthorizationManager">
+        <bean class="com.google.enterprise.connector.otex.LivelinkAuthorizationManager"/>
+    </property>
+    }}}
+
+    <em>Since:</em> 2.8
+
 ==== tryLowercaseUsernames ====
     A hack to try using a lowercase version of the supplied
     username for authorizations. If <tt>true</tt>, the lowercase
@@ -674,45 +745,4 @@ default value.
     {{{
     <property name="genealogist"
               value="com.google.enterprise.connector.otex.BatchGenealogist"/>
-    }}}
-
-=== Other Beans ===
-
-==== authenticationManager ====
-    The <tt>class</tt> attribute of the <tt>authenticationManager</tt>
-    bean specifies the <tt>!AuthenticationManager</tt> instance to use
-    when authenticating before providing access to content.
-
-    There are three <tt>!AuthenticationManager</tt> implementations in the
-    <tt>com.google.enterprise.connector.otex</tt> package:
-    <dl>
-    <dt><tt>!LivelinkAuthenticationManager</tt>
-    <dd>This implementation authenticates by using the
-    provided credentials to log in to Livelink.
-    <dt><tt>!NoOpAuthenticationManager</tt>
-    <dd><b>Note: This value bypasses Livelink security.</b> 
-    This implementation authenticates all users. An
-    optional "sharedPassword" property may be
-    configured containing a password which must be
-    present in the credentials.
-    <dt><tt>!LdapAuthenticationManager</tt>
-    <dd>This implementation uses the provided credentials
-    to authenticate against an LDAP server. Two
-    properties are required:</dd>
-        <dl>
-        <dt><tt>providerUrl</tt>
-        <dd>The LDAP or LDAPS URL for the directory server.
-        <dt><tt>securityPrincipalPattern</tt>
-        <dd>The DN to use for authentication. A single
-        <tt>java.text.!MessageFormat</tt>
-        parameter should be supplied;
-        the provided username will be substituted
-        there. For example:
-        <pre>uid={0},ou=people,dc=example,dc=com</pre></dd>
-
-    <em>Default Value:</em>
-    {{{
-    <bean id="authenticationManager"
-          class="com.google.enterprise.connector.otex.LivelinkAuthenticationManager"
-          scope="prototype"/>
     }}}
