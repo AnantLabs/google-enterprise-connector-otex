@@ -547,7 +547,8 @@ default value.
     {{{
     <property name="displayActions">
         <map>
-            <entry key="0,202,136" value="browse" />
+            <entry key="0,136,202,402" value="browse" />
+            <entry key="1" value="open" />
             <entry key="130,134,215" value="view" />
             <entry key="144" value="overview" />
             <entry key="204" value="BrowseTaskList" />
@@ -585,6 +586,8 @@ default value.
     {{{
     <property name="useDTreeAncestors" value="true" />
     }}}
+
+   <em>Since:</em> 2.6.10
 
 === Other Properties ===
 
@@ -626,7 +629,7 @@ default value.
     </property>
     }}}
 
-    In versions prior to 2.8, a custom authentication manager was assigned by editing
+    In versions prior to 2.6.10, a custom authentication manager was assigned by editing
     the <tt>authenticationManager</tt> bean definition in connectorInstance.xml.
 
 ==== authorizationManager ====
@@ -643,7 +646,7 @@ default value.
     </property>
     }}}
 
-    <em>Since:</em> 2.8
+    <em>Since:</em> 2.6.10
 
 ==== publicContentAuthorizationManager ====
     The <tt>!AuthorizationManager</tt> instance to use
@@ -662,7 +665,7 @@ default value.
     </property>
     }}}
 
-    <em>Since:</em> 2.8
+    <em>Since:</em> 2.6.10
 
 ==== tryLowercaseUsernames ====
     A hack to try using a lowercase version of the supplied
@@ -746,3 +749,5 @@ default value.
     <property name="genealogist"
               value="com.google.enterprise.connector.otex.BatchGenealogist"/>
     }}}
+
+    <em>Since:</em> 2.6.10
