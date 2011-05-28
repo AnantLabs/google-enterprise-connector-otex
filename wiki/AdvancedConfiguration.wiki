@@ -424,6 +424,33 @@ default value.
     <property name="excludedCategories" value="" />
     }}}
 
+==== includedSelectExpressions ====
+    The additional SQL `SELECT` expressions that you want to index.
+    The expressions are added to the main traversal query
+    against the !WebNodes view and the resulting values are indexed
+    under the given property name. If the property exists, a new value
+    will be added to it.
+
+    A map from property names to SQL `SELECT` expressions.
+
+    This is similar to adding a property with a document filter, except
+    that the values here can be based on data from the database.
+    For example, to index a count of the siblings of each document,
+    you could include the following entry in the map:
+    {{{
+    <entry key="siblingCount"
+          value="(select count(*)-1 from DTree d where d.ParentID = a.ParentID)" />
+    }}}
+ 
+    <em>Default Value:</em>
+    {{{
+    <property name="includedSelectExpressions">
+      <map></map>
+    </property>
+    }}}
+
+   <em>Since:</em> 2.8
+
 ==== showHiddenItems ====
     Specifies whether hidden items, or their children, are shown
     in the search results. This property is used for authorization,
