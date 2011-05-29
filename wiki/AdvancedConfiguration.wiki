@@ -435,6 +435,8 @@ default value.
 
     This is similar to adding a property with a document filter, except
     that the values here can be based on data from the database.
+    In the query, the !WebNodes view is given a range variable, or
+    table correlation, of "`a`". 
     For example, to index a count of the siblings of each document,
     you could include the following entry in the map:
     {{{
