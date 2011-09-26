@@ -728,11 +728,9 @@ default value.
     disappointing, in line with but consistently 1-1/2 to 3 times slower
     than the others.
     <dt><tt>!PipedContentHandler</tt>
-    <dd> Uses a pipe to match the in-memory performance
-    characteristics of the byte array handler without the scalability
-    issues. Combines consistently good performance with small memory
-    consumption. However, this implementation has a potential thread
-    deadlock problem seen in development (though not in production).</dd>
+    <dd> *DO NOT USE:* This implementation has several bugs that
+    prevent its use, including a potential for deadlock and failures in
+    exception handling that can lead to infinite loops during traversal.</dd>
 
     <em>Default Value:</em>
     {{{
