@@ -106,6 +106,40 @@ default value.
     <property name="connection" value=""/>
     }}}
 
+==== domainAndName ====
+    This property is based on the Livelink security parameter of the same
+    name ("<tt>!DomainAndName</tt>"), which has the boolean values
+    <tt>FALSE</tt> and <tt>TRUE</tt>. The
+    values are extended for the connector environment.
+
+    <dl>
+    <dt><tt>FALSE</tt>
+    <dd>Do no use the identity domain or the DNS-style domain.</dd>
+    <dt><tt>LEGACY</tt>
+    <dd>Do not use the identity domain, but allow DNS-style domains in
+    the username for authentication. This matches the previous behavior and is
+    the default value.</dd>
+    <dt><tt>AUTHENTICATION</tt>
+    <dd>Use the identity domain only for authentication.</dd>
+    <dt>TRUE</dt>
+    <dd>Use the identity domain for authentication and authorization.</dd>
+
+    For authentication, a DNS-style domain name in the username is preserved. 
+    For example: <tt>johndoe@example.com</tt>. The configured 
+    <tt>windowsDomain</tt> will also be used for authentication if no
+    domain appears in the identity or if such domains are disabled by setting
+    this property to <tt>FALSE</tt> or <tt>LEGACY</tt>.
+
+    For authorization, the DNS-style domains are not preserved and the 
+    <tt>windowsDomain</tt> property is never used.
+
+    <em>Default Value:</em>
+    {{{
+    <property name="domainAndName" value="legacy"/>
+    }}}
+
+   <em>Since:</em> 2.8
+
 ==== windowsDomain ====
     The Windows domain to authenticate users against.
 
