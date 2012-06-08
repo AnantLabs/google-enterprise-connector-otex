@@ -766,6 +766,26 @@ default value.
     prevent its use, including a potential for deadlock and failures in
     exception handling that can lead to infinite loops during traversal.</dd>
 
+    Starting in version 2.8.4, the property value can also be a bean,
+    in addition to the class name strings. The <tt>HttpURLContentHandler</tt>
+    supports properties of its own:
+    <dl>
+    <dt><tt>urlBase</tt>
+    <dd> The URL prefix used to retrieve the document. The default value is
+    the value of the *Livelink URL* field in the connector configuration page.
+    <dt><tt>urlPath</tt>
+    <dd> The URL path used to retrieve the document. The default value is
+    `"?func=ll&objAction=download&objId="`.
+
+    For example:
+    {{{
+    <property name="contentHandler">
+        <bean class="com.google.enterprise.connector.otex.HttpURLContentHandler">
+            <property name="urlPath" value="?func=myfunc&objid="/>
+        </bean>
+    </property>
+    }}}
+ 
     <em>Default Value:</em>
     {{{
     <property name="contentHandler"
