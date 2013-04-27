@@ -19,6 +19,8 @@ All queries are submitted as literal strings without SQL parameters. The Livelin
 || `$excludedLocationNodes` || A comma-separated list of object IDs. An advanced configuration property ||
 || `$excludedNodeTypes` || A comma-separated list of subtypes. An advanced configuration property ||
 || `$excludedVolumeTypes` || A comma-separated list of subtypes. An advanced configuration property ||
+|| `$includedSelectExpressions` || A comma-separated list of SQL SELECT expressions, derived from an advanced configuration property of the same name ||
+|| `$sqlWhereCondition` || An extra SQL condition applied to the traversal candidates. An advanced configuration property ||
 || `$ancestorNodes` || A comma-separated list of object or volume IDs, derived from `$includedLocationNodes` ||
 || `$enterpriseID` || The object ID of the Enterprise workspace, often but not always 2000 ||
 || `$enterpriseVolumeID` || The volume ID of the Enterprise workspace, often but not always -2000 ||
@@ -27,10 +29,13 @@ All queries are submitted as literal strings without SQL parameters. The Livelin
 || `$workflowVolumeID` ||  The volume ID of the workflow volume ||
 || `$modifyDate` || The current !ModifyDate in the traversal order ||
 || `$dataID` || The current DataID (object ID) in the traversal order ||
-|| `$batchSize` || The requested batch size, based on the traversal rate, with a default of 200, up to a configurable maximum of 500 with a hard ceiling of 1000 ||
+|| `$batchSize` || The requested batch size, based on the traversal rate, with a default of 500, up to a configurable maximum of 500 with a hard ceiling of 1000 ||
 || `$candidates` || A comma-separated list of up to `$batchSize` object IDs returned by the first traversal query ||
+|| `$descendants` || A comma-separated list of object IDs, including those candidates that are located within the Items to Index ||
 || `$deleteDate` || The current !ModifyDate in the traversal order for deleted documents ||
 || `$eventID` || The current EventID in the traversal order for deleted documents ||
+|| `$nodeID` || The current node when looking to see whether a candidate is in the Items to Index ||
+|| `$nodeIDs` || The current list of nodes when looking to see whether the candidates are in the Items to Index ||
 
 
 = Configuration Queries =
@@ -76,6 +81,15 @@ from DTree a
 where not exists (select DataID from DTreeAncestors where DataID = a.DataID and AncestorID = $enterpriseID) 
     and OwnerID = $enterpriseVolumeID and DataID <> $enterpriseID
 }}}
+  # If a SQL WHERE condition is specified, make sure that it is valid syntactically and returns at least one row from `WebNodes`.
+    * *Oracle*
+{{{
+select DataID, PermID from WebNodes a where ($sqlWhereCondition) and rownum = 1
+}}}
+    * *SQL Server*
+{{{
+select TOP 1 DataID, PermID from WebNodes a where $sqlWhereCondition
+}}}
 
 
 = Authorization Queries =
@@ -114,13 +128,13 @@ These queries are executed when indexing content. The traversal runs in batches,
   # Find the latest event in the audit trail so that we do not process older delete events.
     * *Oracle*
 {{{
-select TO_CHAR(AuditDate, 'YYYY-MM-DD HH24:MI:SS') as AuditDate
+select TO_CHAR(AuditDate, 'YYYY-MM-DD HH24:MI:SS') as AuditDate, EventID
 from DAuditNew a
 where EventID in (select max(EventID) from DAuditNew)
 }}}
     * *SQL Server*
 {{{
-select CONVERT(VARCHAR(23), AuditDate, 121) as AuditDate
+select CONVERT(VARCHAR(23), AuditDate, 121) as AuditDate, EventID
 from DAuditNew a
 where EventID in (select max(EventID) from DAuditNew)
 }}}
@@ -128,7 +142,7 @@ where EventID in (select max(EventID) from DAuditNew)
     * *Oracle*
 {{{
 select ModifyDate, DataID
-from (select * from DTree order by ModifyDate, DataID)
+from (select * from DTree order by ModifyDate, DataID) a
 where
     [ (ModifyDate > TO_DATE($modifyDate, 'YYYY-MM-DD HH24:MI:SS') 
        or (ModifyDate = TO_DATE($modifyDate, 'YYYY-MM-DD HH24:MI:SS') and DataID > $dataID))
@@ -139,7 +153,7 @@ where
     * *SQL Server*
 {{{
 select top $batchSize ModifyDate, DataID
-from DTree
+from DTree a
 where
     [ 1=1
     | (ModifyDate > $modifyDate 
@@ -150,7 +164,8 @@ order by ModifyDate, DataID
   # Second query of the traversal, applying restrictions to the candidates from the first query, including the permissions of the traversal user and the configured restrictions such as Items to Index and the advanced configuration of included and excluded types and items. The first optional condition is used if Items to Index are specified. The other optional conditions are used if the advanced configuration properties they refer to are non-empty.
 {{{
 select DataID, ModifyDate, MimeType, Name, DComment, CreateDate, OwnerName,
-    SubType, OwnerID, UserID, DataSize, PermID
+    SubType, OwnerID, UserID, case when DataSize < 0 then 0 else DataSize end DataSize,
+    PermID, $includedSelectExpressions
 from WebNodes a
 where DataID in ($candidates)
     [ and (DataID in ($ancestorNodes)
@@ -163,13 +178,14 @@ where DataID in ($candidates)
     [ and DataID not in (select DataID 
                          from DTreeAncestors
                          where DataID in ($candidates) and AncestorID in ($excludedLocationNodes)) ]
+    [ and $sqlWhereCondition ]
 order by ModifyDate, DataID
 }}}
   # Gets items to be deleted, based on the audit trail. The optional conditions are used if the advanced configuration properties they refer to are non-empty.
     * *Oracle*
 {{{
 select TO_CHAR(AuditDate, 'YYYY-MM-DD HH24:MI:SS') as AuditDate, EventID, DataID
-from (select * from DAuditNew order by AuditDate, EventID)
+from (select * from DAuditNew order by AuditDate, EventID) a
 where AuditID = 2
     and (AuditDate > TO_DATE($deleteDate, 'YYYY-MM-DD HH24:MI:SS') 
          or (AuditDate = TO_DATE($deleteDate, 'YYYY-MM-DD HH24:MI:SS') and EventID > $eventID))
@@ -179,13 +195,45 @@ where AuditID = 2
     * *SQL Server*
 {{{
 select top $batchSize CONVERT(VARCHAR(23), AuditDate, 121) as AuditDate, EventID, DataID
-from DAuditNew
+from DAuditNew a
 where AuditID = 2
     and (AuditDate > $deleteDate 
          or (AuditDate = $deleteDate and EventID > $eventID))
     [ and SubType not in ($excludedNodeTypes) ]
 order by ModifyDate, DataID
 }}}
+
+
+= Genealogist Queries =
+
+These queries are used during traversals, altering the second query of the traversal, and adding subsequent queries to determine the items to index.
+
+  # Using a genealogist alters the second query of the traversal above, simplifying the select list. The optional elements here are paired: `$sqlWhereCondition` requires `WebNodes`, otherwise `DTree` is used.
+{{{
+select DataID from [ WebNodes | DTree ] a
+    ... 
+    [ and ($sqlWhereCondition) ]
+order by ModifyDate, DataID
+}}}
+  # The select list from the original second query of the traversal is then applied later to the items that are found to be descendants of the Items to Index.
+{{{
+select DataID, ModifyDate, MimeType, Name, DComment, CreateDate, OwnerName,
+    SubType, OwnerID, UserID, case when DataSize < 0 then 0 else DataSize end DataSize,
+    PermID, $includedSelectExpressions
+from WebNodes a
+where DataID in ($descendants)
+}}}
+  # Finds the parent of a given item. Used by the base Genealogist implementation.
+{{{
+select ParentID from DTree a where DataID in ($nodeID, -$nodeID)
+}}}
+  # Finds the parents of a given list of items. Used by the !HybridGenealogist and the default !BatchGenealogist implementations.
+{{{
+select DataID, ParentID, 
+    (select ParentID from DTree b where -a.DataID = b.DataID and b.ParentID <> -1) as StepParentID
+from DTree a where DataID in ($nodeIDs)
+}}}
+
 
 = References =
 
