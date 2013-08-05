@@ -517,6 +517,22 @@ default value.
     <property name="showHiddenItems" value="true" />
     }}}
 
+==== sqlWhereCondition ====
+    The additional SQL `WHERE` conditions that you want to use to restrict
+    the items to be indexed. The conditions are added to the main traversal query
+    against the !WebNodes view and may reference any searchable columns in that
+    view. In the query, the !WebNodes view is given a range variable, or
+    table correlation, of "`a`". 
+
+    A SQL predicate.
+
+    <em>Default Value:</em>
+    {{{
+    <property name="sqlWhereCondition" value="" />
+    }}}
+
+   <em>Since:</em> 2.8.4
+
 ==== trackDeletedItems ====
     Specifies whether to track items that have been deleted from
     the Livelink repository, so that those items may also be deleted
