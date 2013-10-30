@@ -792,12 +792,19 @@ default value.
     <dt><tt>urlPath</tt>
     <dd> The URL path used to retrieve the document. The default value is
     `"?func=ll&objAction=download&objId="`.
+    <dt><tt>connectTimeout</tt>
+    <dd> The connect timeout in seconds. The default timeout is zero, which 
+    means timeouts are disabled. <em>Since:</em> 3.2.2
+    <dt><tt>readTimeout</tt>
+    <dd> The read timeout in seconds. The default timeout is zero, which 
+    means timeouts are disabled. <em>Since:</em> 3.2.2
 
     For example:
     {{{
     <property name="contentHandler">
         <bean class="com.google.enterprise.connector.otex.HttpURLContentHandler">
             <property name="urlPath" value="?func=myfunc&objid="/>
+            <property name="readTimeout" value="60"/>
         </bean>
     </property>
     }}}
