@@ -5,7 +5,7 @@
 
 The Google Search Appliance usually determines the title displayed in the search results from the document content. In many cases, the Livelink object name is a more thoughtful title to display. It is possible to customize the front end stylesheet to display the Livelink object name when it is applicable.
 
-*NOTE: Customizing the stylesheet is not supported in any way by Google Enterprise Support. Use these modifications at your own risk.*
+*NOTE: Customizing the stylesheet is not supported in any way by Google for Work Support. Use these modifications at your own risk.*
 
 = Details =
 
