@@ -18,7 +18,7 @@ First, to retrieve the google:title metadata element in the front end, find the 
 
 <!-- *** space_normalized_query: q = /GSP/Q *** -->
 }}}
-and add the following text between the first two lines, before the </xsl:template> line:
+and add the following text between the first two lines, before the `</xsl:template>` line:
 {{{
   <xsl:if test="not(PARAM[@name = 'getfields'])">
     <input type="hidden" name="getfields" value="google:title"/>
@@ -30,7 +30,7 @@ Second, to use the google:title element as a title, find the following lines:
     <xsl:choose>
       <xsl:when test="T">
 }}}
-and insert the following text between them, before the <xsl:when test="T"> line:
+and insert the following text between them, before the `<xsl:when test="T">` line:
 {{{
       <xsl:when test="MT[@N='google:title']">
         <xsl:call-template name="reformat_keyword">
